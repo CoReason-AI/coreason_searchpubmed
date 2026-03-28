@@ -1,10 +1,9 @@
-import pandas as pd
 import respx
 
 from coreason_searchpubmed.pubmed import get_pubmed_metadata_pmid
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_get_pubmed_metadata_pmid_general_exception() -> None:
     # To cover line 46: else: logger.error(f"Unexpected error in batch: {result}")
 
@@ -19,8 +18,9 @@ def test_get_pubmed_metadata_pmid_general_exception() -> None:
     AsyncPubMedClient.efetch = mock_efetch  # type: ignore
 
     try:
-        df = get_pubmed_metadata_pmid(["12345"])
-        assert isinstance(df, pd.DataFrame)
-        assert df.empty
+        import pytest
+
+        with pytest.raises(ValueError, match="General unexpected error"):
+            get_pubmed_metadata_pmid(["12345"])
     finally:
         AsyncPubMedClient.efetch = original_efetch  # type: ignore

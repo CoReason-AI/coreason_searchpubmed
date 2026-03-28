@@ -30,7 +30,7 @@ def multiple_mock_xml_responses() -> bytes:
     """
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_full_pipeline_success(multiple_mock_xml_responses: bytes) -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         return_value=httpx.Response(200, content=multiple_mock_xml_responses)
