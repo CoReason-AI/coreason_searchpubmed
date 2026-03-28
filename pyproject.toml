@@ -15,6 +15,7 @@ dependencies = [
     "httpx>=0.28.1",
     "lxml>=6.0.2",
     "pandas>=3.0.1",
+    "pyarrow>=23.0.1",
     "pydantic>=2.12.5",
 ]
 license = { file = "LICENSE" }
@@ -81,3 +82,8 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 omit = ["tests/*"]
+
+
+
+[tool.deptry]
+ignore = ["DEP002", "DEP003"]
