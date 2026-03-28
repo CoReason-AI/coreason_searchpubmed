@@ -1,12 +1,15 @@
 # Copyright (c) 2026 CoReason, Inc.
 import asyncio
+import logging
 import time
 from typing import Any
 
 import httpx
 
 from coreason_searchpubmed.client.exceptions import PubMedNetworkError
-from coreason_searchpubmed.utils.logger import logger
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
@@ -42,6 +45,7 @@ class AsyncPubMedClient:
         rate = 10.0 if api_key else 3.0
         self.rate_limiter = RateLimiter(rate=rate, capacity=rate)
         self.client = httpx.AsyncClient(timeout=timeout)
+        self._semaphore = asyncio.Semaphore(int(rate))
 
     async def close(self) -> None:
         await self.client.aclose()
@@ -54,21 +58,24 @@ class AsyncPubMedClient:
         url = f"{BASE_URL}{endpoint}"
 
         for attempt in range(1, self.max_retries + 1):
-            await self.rate_limiter.acquire()
-            try:
-                response = await self.client.request(method, url, params=params)
-                if response.status_code == 429:
-                    retry_after = float(response.headers.get("Retry-After", 1.0))
-                    logger.warning(f"Rate limited (429). Retrying after {retry_after}s.")
-                    await asyncio.sleep(retry_after)
-                    continue
-                response.raise_for_status()
-                return response
-            except httpx.HTTPError as e:
-                logger.error(f"HTTP error on attempt {attempt}: {e}")
-                if attempt == self.max_retries:
-                    raise PubMedNetworkError(f"Failed to fetch {url} after {self.max_retries} attempts.") from e
-                await asyncio.sleep(2**attempt)
+            # Acquire semaphore first to ensure we strictly enforce concurrent connections
+            # and prevent hoarding rate tokens while waiting for a concurrency slot.
+            async with self._semaphore:
+                await self.rate_limiter.acquire()
+                try:
+                    response = await self.client.request(method, url, params=params)
+                    if response.status_code == 429:
+                        retry_after = float(response.headers.get("Retry-After", 1.0))
+                        logger.warning(f"Rate limited (429). Retrying after {retry_after}s.")
+                        await asyncio.sleep(retry_after)
+                        continue
+                    response.raise_for_status()
+                    return response
+                except httpx.HTTPError as e:
+                    logger.error(f"HTTP error on attempt {attempt}: {e}")
+                    if attempt == self.max_retries:
+                        raise PubMedNetworkError(f"Failed to fetch {url} after {self.max_retries} attempts.") from e
+                    await asyncio.sleep(2**attempt)
 
         raise PubMedNetworkError(f"Failed to fetch {url} after {self.max_retries} attempts.")
 

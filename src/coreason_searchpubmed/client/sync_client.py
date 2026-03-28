@@ -1,4 +1,5 @@
 # Copyright (c) 2026 CoReason, Inc.
+import logging
 import threading
 import time
 from typing import Any
@@ -6,7 +7,9 @@ from typing import Any
 import httpx
 
 from coreason_searchpubmed.client.exceptions import PubMedNetworkError
-from coreason_searchpubmed.utils.logger import logger
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
