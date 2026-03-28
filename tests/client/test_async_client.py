@@ -21,7 +21,7 @@ async def test_rate_limiter_wait() -> None:
     assert limiter.tokens < 100.0
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_success() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
@@ -33,7 +33,7 @@ async def test_async_client_success() -> None:
     await client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_empty_ids() -> None:
     client = AsyncPubMedClient()
@@ -42,7 +42,7 @@ async def test_async_client_empty_ids() -> None:
     await client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_429_retry() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
@@ -54,7 +54,7 @@ async def test_async_client_429_retry() -> None:
     await client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_http_error_retry() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
@@ -66,7 +66,7 @@ async def test_async_client_http_error_retry() -> None:
     await client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_max_retries_exceeded() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(return_value=httpx.Response(500))
@@ -76,7 +76,7 @@ async def test_async_client_max_retries_exceeded() -> None:
     await client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_http_exception() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
@@ -88,7 +88,7 @@ async def test_async_client_http_exception() -> None:
     await client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_http_exception_max() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(return_value=httpx.Response(500))

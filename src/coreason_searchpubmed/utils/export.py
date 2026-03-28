@@ -25,8 +25,36 @@ def to_dataframe(articles: list[Article]) -> pd.DataFrame:
             ]
         )
 
-    records = [article.model_dump(by_alias=True) for article in articles]
-    df = pd.DataFrame(records)
+    # Access fields directly using field aliases to avoid slow .model_dump()
+    cols = [
+        "pmid",
+        "pmcid",
+        "title",
+        "abstract",
+        "journal",
+        "publication_date",
+        "doi",
+        "first_author",
+        "last_author",
+        "author_affiliations",
+        "mesh_tags",
+        "keywords",
+    ]
+
+    # Preallocate columnar data
+    data = {k: [getattr(a, k) for a in articles] for k in cols}
+
+    df = pd.DataFrame(data)
+
+    # Rename columns to aliases
+    rename_map = {
+        "publication_date": "publicationDate",
+        "first_author": "firstAuthor",
+        "last_author": "lastAuthor",
+        "author_affiliations": "authorAffiliations",
+        "mesh_tags": "meshTags",
+    }
+    df = df.rename(columns=rename_map)
 
     text_cols = ["pmid", "pmcid", "title", "abstract", "journal", "publicationDate", "doi", "firstAuthor", "lastAuthor"]
 

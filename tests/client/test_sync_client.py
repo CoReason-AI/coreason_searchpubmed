@@ -19,7 +19,7 @@ def test_sync_rate_limiter_wait() -> None:
     assert limiter.tokens < 100.0
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_sync_client_success() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         return_value=httpx.Response(200, content=b"xml_data")
@@ -37,7 +37,7 @@ def test_sync_client_empty_ids() -> None:
     client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_sync_client_429_retry() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         side_effect=[httpx.Response(429, headers={"Retry-After": "0.1"}), httpx.Response(200, content=b"success")]
@@ -48,7 +48,7 @@ def test_sync_client_429_retry() -> None:
     client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_sync_client_http_error_retry() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         side_effect=[httpx.Response(500), httpx.Response(500), httpx.Response(200, content=b"recovered")]
@@ -59,7 +59,7 @@ def test_sync_client_http_error_retry() -> None:
     client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_sync_client_max_retries_exceeded() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(return_value=httpx.Response(500))
     client = PubMedClient(max_retries=1)
@@ -68,7 +68,7 @@ def test_sync_client_max_retries_exceeded() -> None:
     client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_sync_client_http_exception() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         side_effect=httpx.ConnectError("Connection failed")
@@ -79,7 +79,7 @@ def test_sync_client_http_exception() -> None:
     client.close()
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_sync_client_http_exception_max() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(return_value=httpx.Response(500))
     client = PubMedClient(max_retries=0)
