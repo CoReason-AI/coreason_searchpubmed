@@ -79,7 +79,6 @@ async def test_end_to_end_rate_limit_and_concurrency() -> None:
 
     client = AsyncPubMedClient(api_key="test_key", max_retries=1)
 
-
     request_timestamps: list[float] = []
 
     def mock_efetch_callback(request: httpx.Request) -> httpx.Response:
