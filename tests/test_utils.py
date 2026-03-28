@@ -1,35 +1,10 @@
-# Copyright (c) 2026 CoReason, Inc.
-#
-# This software is proprietary and dual-licensed.
-# Licensed under the Prosperity Public License 3.0 (the "License").
-# A copy of the license is available at https://prosperitylicense.com/versions/3.0.0
-# For details, see the LICENSE file.
-# Commercial use beyond a 30-day trial requires a separate license.
-#
-# Source Code: https://github.com/CoReason-AI/coreason_searchpubmed
+import pytest
+import logging
+import coreason_searchpubmed.utils.logger as logger_module
 
-from pathlib import Path
-
-from coreason_searchpubmed.utils.logger import logger
-
-
-def test_logger_initialization() -> None:
-    """Test that the logger is initialized correctly and creates the log directory."""
-    # Since the logger is initialized on import, we check side effects
-
-    # Check if logs directory creation is handled
-    # Note: running this test might actually create the directory in the test environment
-    # if it doesn't exist.
-
-    log_path = Path("logs")
-    assert log_path.exists()
-    assert log_path.is_dir()
-
-    # Verify app.log creation if it was logged to (it might be empty or not created until log)
-    # logger.info("Test log")
-    # assert (log_path / "app.log").exists()
-
-
-def test_logger_exports() -> None:
-    """Test that logger is exported."""
-    assert logger is not None
+def test_logger_setup():
+    assert isinstance(logger_module.logger, logging.Logger)
+    assert logger_module.logger.name == "coreason_searchpubmed"
+    # Ensure NullHandler is present
+    has_null_handler = any(isinstance(h, logging.NullHandler) for h in logger_module.logger.handlers)
+    assert has_null_handler

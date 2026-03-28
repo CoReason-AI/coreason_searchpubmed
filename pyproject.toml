@@ -12,7 +12,14 @@ authors = [
     { name = "Akshaya M", email = "akshaya.movvar@coreason.ai" },
 ]
 dependencies = [
-    "loguru>=0.7.2",
+    "beautifulsoup4>=4.14.3",
+    "dateparser>=1.4.0",
+    "httpx>=0.28.1",
+    "lxml>=6.0.2",
+    "pandas>=3.0.1",
+    "pyarrow>=23.0.1",
+    "pydantic>=2.12.5",
+    "requests>=2.33.0",
 ]
 license = { file = "LICENSE" }
 classifiers = [
@@ -37,7 +44,12 @@ dev = [
     "mkdocstrings-python",
     "types-pyyaml>=6.0.12.20250915",
     "tzdata>=2025.3",
-    "pytest-xdist>=3.6.1"
+    "pytest-xdist>=3.6.1",
+    "pytest-httpx>=0.36.0",
+    "requests-mock>=1.12.1",
+    "respx>=0.22.0",
+    "lxml-stubs>=0.5.1",
+    "pandas-stubs>=3.0.0.260204",
 ]
 
 [tool.hatch.build.targets.wheel]
