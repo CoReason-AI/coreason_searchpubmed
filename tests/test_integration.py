@@ -1,11 +1,13 @@
-import pytest
-import respx
 import httpx
 import pandas as pd
+import pytest
+import respx
+
 from coreason_searchpubmed.pubmed import get_pubmed_metadata_pmid
 
+
 @pytest.fixture
-def multiple_mock_xml_responses():
+def multiple_mock_xml_responses() -> bytes:
     return b"""<?xml version="1.0"?>
     <PubmedArticleSet>
         <PubmedArticle>
@@ -27,8 +29,9 @@ def multiple_mock_xml_responses():
     </PubmedArticleSet>
     """
 
-@respx.mock
-def test_full_pipeline_success(multiple_mock_xml_responses):
+
+@respx.mock  # type: ignore
+def test_full_pipeline_success(multiple_mock_xml_responses: bytes) -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         return_value=httpx.Response(200, content=multiple_mock_xml_responses)
     )
@@ -43,8 +46,18 @@ def test_full_pipeline_success(multiple_mock_xml_responses):
 
     # Check all columns exist as expected
     expected_cols = [
-        "pmid", "pmcid", "title", "abstract", "journal", "publicationDate",
-        "doi", "firstAuthor", "lastAuthor", "authorAffiliations", "meshTags", "keywords"
+        "pmid",
+        "pmcid",
+        "title",
+        "abstract",
+        "journal",
+        "publicationDate",
+        "doi",
+        "firstAuthor",
+        "lastAuthor",
+        "authorAffiliations",
+        "meshTags",
+        "keywords",
     ]
     for col in expected_cols:
         assert col in df.columns

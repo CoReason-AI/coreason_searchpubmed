@@ -1,10 +1,11 @@
-import pytest
-import respx
 import httpx
+import respx
+
 from coreason_searchpubmed.client.sync_client import PubMedClient
 
-@respx.mock
-def test_sync_client_none_params():
+
+@respx.mock  # type: ignore
+def test_sync_client_none_params() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         return_value=httpx.Response(200, content=b"")
     )

@@ -12,7 +12,6 @@
 Domain models for PubMed articles.
 """
 
-
 from pydantic import BaseModel, Field
 
 

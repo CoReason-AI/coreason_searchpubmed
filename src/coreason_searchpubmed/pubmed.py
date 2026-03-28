@@ -26,6 +26,7 @@ def get_pubmed_metadata_pmid(pmids: list[str], api_key: str | None = None) -> pd
 
     return run_async()
 
+
 async def _async_get_pubmed_metadata(pmids: list[str], api_key: str | None) -> pd.DataFrame:
     client = AsyncPubMedClient(api_key=api_key)
     batch_size = 200
@@ -34,7 +35,7 @@ async def _async_get_pubmed_metadata(pmids: list[str], api_key: str | None) -> p
     try:
         tasks = []
         for i in range(0, len(pmids), batch_size):
-            batch = pmids[i:i + batch_size]
+            batch = pmids[i : i + batch_size]
             tasks.append(_fetch_and_parse_batch(client, batch))
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -53,6 +54,7 @@ async def _async_get_pubmed_metadata(pmids: list[str], api_key: str | None) -> p
         await client.close()
 
     return to_dataframe(all_articles)
+
 
 async def _fetch_and_parse_batch(client: AsyncPubMedClient, batch: list[str]) -> list[Article]:
     xml_content = await client.efetch(db="pubmed", ids=batch, retmode="xml")

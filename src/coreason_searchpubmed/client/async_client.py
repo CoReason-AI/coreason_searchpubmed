@@ -10,6 +10,7 @@ from coreason_searchpubmed.utils.logger import logger
 
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
+
 class RateLimiter:
     def __init__(self, rate: float, capacity: float) -> None:
         self.rate = rate
@@ -31,6 +32,7 @@ class RateLimiter:
                     return
                 wait_time = (1 - self.tokens) / self.rate
             await asyncio.sleep(wait_time)
+
 
 class AsyncPubMedClient:
     def __init__(self, api_key: str | None = None, timeout: float = 30.0, max_retries: int = 3) -> None:
@@ -66,7 +68,7 @@ class AsyncPubMedClient:
                 logger.error(f"HTTP error on attempt {attempt}: {e}")
                 if attempt == self.max_retries:
                     raise PubMedNetworkError(f"Failed to fetch {url} after {self.max_retries} attempts.") from e
-                await asyncio.sleep(2 ** attempt)
+                await asyncio.sleep(2**attempt)
 
         raise PubMedNetworkError(f"Failed to fetch {url} after {self.max_retries} attempts.")
 
@@ -76,4 +78,4 @@ class AsyncPubMedClient:
         id_str = ",".join(ids)
         params = {"db": db, "id": id_str, "retmode": retmode}
         response = await self._request("POST", "efetch.fcgi", params=params)
-        return response.content
+        return bytes(response.content)

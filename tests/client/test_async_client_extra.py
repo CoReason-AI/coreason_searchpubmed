@@ -1,11 +1,13 @@
+import httpx
 import pytest
 import respx
-import httpx
+
 from coreason_searchpubmed.client.async_client import AsyncPubMedClient
 
-@respx.mock
+
+@respx.mock  # type: ignore
 @pytest.mark.asyncio
-async def test_async_client_none_params():
+async def test_async_client_none_params() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         return_value=httpx.Response(200, content=b"")
     )

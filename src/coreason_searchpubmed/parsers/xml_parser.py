@@ -29,6 +29,7 @@ def parse_pubmed_xml(xml_content: bytes) -> list[Article]:
 
     return articles
 
+
 def _parse_single_article(article_node: etree._Element) -> Article | None:
     medline_cit = article_node.find("MedlineCitation")
     if medline_cit is None:
@@ -109,8 +110,9 @@ def _parse_single_article(article_node: etree._Element) -> Article | None:
         lastAuthor=last_author,
         authorAffiliations=author_affiliations or None,
         meshTags=mesh_tags or None,
-        keywords=keywords or None
+        keywords=keywords or None,
     )
+
 
 def _extract_date(pub_date_node: etree._Element) -> str | None:
     year_node = pub_date_node.find("Year")
@@ -123,13 +125,14 @@ def _extract_date(pub_date_node: etree._Element) -> str | None:
             date_str += f"-{month_node.text}"
             if day_node is not None and day_node.text:
                 date_str += f"-{day_node.text}"
-        return date_str
+        return str(date_str)
 
     medline_date_node = pub_date_node.find("MedlineDate")
     if medline_date_node is not None and medline_date_node.text:
-        return medline_date_node.text
+        return str(medline_date_node.text)
 
     return None
+
 
 def _extract_author_name(author_node: etree._Element) -> str | None:
     last_name_node = author_node.find("LastName")
