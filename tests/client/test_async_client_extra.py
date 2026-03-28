@@ -5,7 +5,7 @@ import respx
 from coreason_searchpubmed.client.async_client import AsyncPubMedClient
 
 
-@respx.mock  # type: ignore
+@respx.mock
 @pytest.mark.asyncio
 async def test_async_client_none_params() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(

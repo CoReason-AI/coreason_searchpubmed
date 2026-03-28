@@ -5,11 +5,9 @@ import concurrent.futures
 import pandas as pd
 
 from coreason_searchpubmed.client.async_client import AsyncPubMedClient
-from coreason_searchpubmed.client.exceptions import PubMedNetworkError
 from coreason_searchpubmed.models.article import Article
 from coreason_searchpubmed.parsers.xml_parser import parse_pubmed_xml
 from coreason_searchpubmed.utils.export import to_dataframe
-from coreason_searchpubmed.utils.logger import logger
 
 
 def get_pubmed_metadata_pmid(pmids: list[str], api_key: str | None = None) -> pd.DataFrame:
@@ -38,17 +36,11 @@ async def _async_get_pubmed_metadata(pmids: list[str], api_key: str | None) -> p
             batch = pmids[i : i + batch_size]
             tasks.append(_fetch_and_parse_batch(client, batch))
 
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        results = await asyncio.gather(*tasks)
 
         for result in results:
-            if isinstance(result, BaseException):
-                if isinstance(result, PubMedNetworkError):
-                    logger.error(f"Batch failed: {result}")
-                else:
-                    logger.error(f"Unexpected error in batch: {result}")
-            else:
-                if isinstance(result, list):
-                    all_articles.extend(result)
+            if isinstance(result, list):
+                all_articles.extend(result)
 
     finally:
         await client.close()

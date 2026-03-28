@@ -30,7 +30,7 @@ def test_get_pubmed_metadata_pmid_empty() -> None:
     assert df.empty
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_get_pubmed_metadata_pmid_success(mock_xml_response: bytes) -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         return_value=httpx.Response(200, content=mock_xml_response)
@@ -45,18 +45,19 @@ def test_get_pubmed_metadata_pmid_success(mock_xml_response: bytes) -> None:
     assert df.iloc[0]["title"] == "Test Article"
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_get_pubmed_metadata_pmid_network_error() -> None:
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
         side_effect=httpx.HTTPError("Network down")
     )
-    # The error should be caught and logged, returning an empty dataframe instead of crashing
-    df = get_pubmed_metadata_pmid(["12345"])
-    assert isinstance(df, pd.DataFrame)
-    assert df.empty
+    # The error should be propagated per FR5.1
+    from coreason_searchpubmed.client.exceptions import PubMedNetworkError
+
+    with pytest.raises(PubMedNetworkError):
+        get_pubmed_metadata_pmid(["12345"])
 
 
-@respx.mock  # type: ignore
+@respx.mock
 def test_get_pubmed_metadata_pmid_runtime_error_event_loop(mock_xml_response: bytes) -> None:
     # This simulates calling it from an already running event loop
     respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
