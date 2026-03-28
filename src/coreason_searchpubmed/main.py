@@ -8,7 +8,10 @@
 #
 # Source Code: https://github.com/CoReason-AI/coreason_searchpubmed
 
-from coreason_searchpubmed.utils.logger import logger
+import logging
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 def hello_world() -> str:

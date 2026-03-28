@@ -1,9 +1,13 @@
 # Copyright (c) 2026 CoReason, Inc.
 
+import logging
+
 from lxml import etree
 
 from coreason_searchpubmed.models.article import Article
-from coreason_searchpubmed.utils.logger import logger
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 def parse_pubmed_xml(xml_content: bytes) -> list[Article]:
