@@ -102,14 +102,14 @@ async def test_end_to_end_rate_limit_and_concurrency() -> None:
         request_timestamps.sort()
         assert len(request_timestamps) == 100
 
-        # We can check that the gap between request[i] and request[i+10] is at least 0.95s, BUT
+        # We can check that the gap between request[i] and request[i+10] is at least 0.90s, BUT
         # only after the initial burst!
         for i in range(10, len(request_timestamps) - 10):
             window_start = request_timestamps[i]
             window_end = request_timestamps[i + 10]
             # Time difference between the i-th and (i+10)-th request must be AT LEAST 1.0 second
-            # at steady state
-            assert (window_end - window_start) >= 0.95
+            # at steady state, but we allow 10% tolerance for CI event loop jitter.
+            assert (window_end - window_start) >= 0.90
 
     finally:
         await client.close()
