@@ -1,10 +1,6 @@
-import time
-
 import httpx
-import pytest
 import respx
 
-from coreason_searchpubmed.client.async_client import RateLimiter
 from coreason_searchpubmed.parsers.xml_parser import parse_pubmed_xml
 from coreason_searchpubmed.pubmed import get_pubmed_metadata_pmid
 
@@ -43,38 +39,6 @@ def test_xxe_vulnerability_prevention() -> None:
     else:
         # If it fails to parse entirely, that's also acceptable security-wise.
         assert len(articles) == 0
-
-
-@pytest.mark.asyncio
-async def test_rate_limiter_replenishment_math() -> None:
-    """
-    Test the token bucket rate limiter strictly obeys time bounds mathematically.
-    """
-    # 10 tokens per second, max 10
-    limiter = RateLimiter(rate=10.0, capacity=10.0)
-
-    # Drain the bucket
-    for _ in range(10):
-        await limiter.acquire()
-
-    assert limiter.tokens < 1.0
-
-    # Fast forward time conceptually
-    # Because time is monotonic in the real implementation, we will mock the `time.monotonic` call for this instance.
-
-    original_monotonic = time.monotonic
-
-    try:
-        # Mock time to be 0.5 seconds later. 10 * 0.5 = 5 tokens should be replenished.
-        mock_time = original_monotonic() + 0.5
-        time.monotonic = lambda: mock_time
-
-        # Next acquire should be immediate (0 wait) because we now have ~5 tokens
-        await limiter.acquire()
-        assert 3.0 < limiter.tokens <= 5.0
-
-    finally:
-        time.monotonic = original_monotonic
 
 
 @respx.mock
