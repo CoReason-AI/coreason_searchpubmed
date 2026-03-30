@@ -32,7 +32,7 @@ def test_sync_client_retry_after_invalid_header() -> None:
         respx.post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi").mock(
             side_effect=[
                 httpx.Response(429, headers={"Retry-After": "invalid"}),
-                httpx.Response(200, content=b"recovered")
+                httpx.Response(200, content=b"recovered"),
             ]
         )
         resp = client.efetch("pubmed", ["123"])
