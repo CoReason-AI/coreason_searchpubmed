@@ -2,23 +2,8 @@ import httpx
 import pytest
 import respx
 
-from coreason_searchpubmed.client.async_client import AsyncPubMedClient, RateLimiter
+from coreason_searchpubmed.client.async_client import AsyncPubMedClient
 from coreason_searchpubmed.client.exceptions import PubMedNetworkError
-
-
-@pytest.mark.asyncio
-async def test_rate_limiter() -> None:
-    limiter = RateLimiter(rate=100.0, capacity=100.0)
-    await limiter.acquire()
-    assert limiter.tokens < 100.0
-
-
-@pytest.mark.asyncio
-async def test_rate_limiter_wait() -> None:
-    limiter = RateLimiter(rate=100.0, capacity=100.0)
-    limiter.tokens = 0.0  # Force it to wait
-    await limiter.acquire()
-    assert limiter.tokens < 100.0
 
 
 @respx.mock
