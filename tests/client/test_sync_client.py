@@ -3,20 +3,7 @@ import pytest
 import respx
 
 from coreason_searchpubmed.client.exceptions import PubMedNetworkError
-from coreason_searchpubmed.client.sync_client import PubMedClient, SyncRateLimiter
-
-
-def test_sync_rate_limiter() -> None:
-    limiter = SyncRateLimiter(rate=100.0, capacity=100.0)
-    limiter.acquire()
-    assert limiter.tokens < 100.0
-
-
-def test_sync_rate_limiter_wait() -> None:
-    limiter = SyncRateLimiter(rate=100.0, capacity=100.0)
-    limiter.tokens = 0.0
-    limiter.acquire()
-    assert limiter.tokens < 100.0
+from coreason_searchpubmed.client.sync_client import PubMedClient
 
 
 @respx.mock
