@@ -21,7 +21,7 @@ logger.addHandler(logging.NullHandler())
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
 
-class WaitRetryAfter(wait_base):  # type: ignore[misc]
+class WaitRetryAfter(wait_base):
     """Wait strategy that honors Retry-After header, falling back to exponential backoff."""
 
     def __init__(self, fallback: wait_base) -> None:

@@ -16,6 +16,6 @@ __version__ = "0.1.0"
 __author__ = "Akshaya M"
 __email__ = "akshaya.movvar@coreason.ai"
 
-from .main import hello_world
+from .pubmed import get_pubmed_metadata_pmid
 
-__all__ = ["hello_world"]
+__all__ = ["get_pubmed_metadata_pmid"]
